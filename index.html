@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel - Lagos Life</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#0f0f0f;color:#fff;padding:16px}
+.login-box{max-width:380px;margin:80px auto;background:#1a1a1a;border:1px solid #333;border-radius:16px;padding:32px;text-align:center}
+h1{color:#e8c47a;margin-bottom:20px}
+input{width:100%;padding:14px;margin:8px 0;border-radius:10px;border:1px solid #333;background:#222;color:#fff;font-size:16px}
+button{width:100%;padding:14px;border:none;border-radius:10px;font-weight:bold;font-size:16px;cursor:pointer;margin-top:8px}
+.dash{max-width:600px;margin:20px auto;display:none}
+.card{background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:16px;margin-bottom:16px}
+.order{background:#222;padding:14px;border-radius:10px;margin:10px 0;font-size:14px;line-height:1.6}
+.btn-green{background:#22c55e;color:#000}
+.btn-red{background:#dc2626;color:#fff;width:auto;padding:8px 14px;font-size:13px}
+</style>
+</head>
+<body>
+
+<div class="login-box" id="loginBox">
+  <h1>Admin Login</h1>
+  <input type="password" id="pass" placeholder="ademide2026">
+  <button class="btn-green" onclick="login()">Enter</button>
+</div>
+
+<div class="dash" id="dash">
+  <h2 style="color:#e8c47a;text-align:center;margin-bottom:8px">Lagos Life Admin</h2>
+  <p style="text-align:center;color:#888;font-size:13px;margin-bottom:16px">Orders from the main site</p>
+
+  <div class="card">
+    Total Orders: <b id="total">0</b>
+    <button class="btn-red" style="float:right" onclick="clearAll()">Clear All</button>
+  </div>
+
+  <div id="list"></div>
+
+  <button class="btn-green" onclick="load()" style="margin-top:10px">Refresh</button>
+</div>
+
+<script>
+function login() {
+  var p = document.getElementById("pass").value;
+  if (p === "ademide2026" || p === "ademide2026 ") {
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("dash").style.display = "block";
+    load();
+  } else {
+    alert("Wrong password. Use: ademide2026");
+  }
+}
+
+function getOrders() {
+  try {
+    return JSON.parse(localStorage.getItem("lagos_orders") || localStorage.getItem("lagos_orders_backup") || "[]");
+  } catch(e) {
+    return [];
+  }
+}
+
+function load() {
+  var orders = getOrders();
+  document.getElementById("total").innerText = orders.length;
+
+  var list = document.getElementById("list");
+  if (orders.length === 0) {
+    list.innerHTML = '<div class="card" style="color:#888;text-align:center">No orders yet</div>';
+    return;
+  }
+
+  list.innerHTML = orders.map(function(o) {
+    return '<div class="order">' +
+      '<b style="color:#e8c47a">' + (o.pkg || "—") + '</b> • ' + (o.status || "Pending") + '<br>' +
+      'Username: <b>' + (o.username || "—") + '</b><br>' +
+      'Password: <b>' + (o.password || "—") + '</b><br>' +
+      'Lagos Life ID: ' + (o.gameID || "—") + '<br>' +
+      '<span style="color:#888;font-size:12px">' + (o.time || "") + '</span>' +
+      '</div>';
+  }).join("");
+}
+
+function clearAll() {
+  if (confirm("Clear all orders?")) {
+    localStorage.removeItem("lagos_orders");
+    localStorage.removeItem("lagos_orders_backup");
+    load();
+  }
+}
+</script>
+</body>
+  </html>
